@@ -1,0 +1,40 @@
+#include<stdio.h>
+#include<string.h>
+int tran[10];
+void swap(int *a,int *b){
+	int temp=*a;
+	*a=*b;
+	*b=temp;
+	return ;
+}
+void quic(int begin,int end){
+	if(begin>=end) return ;
+	int l=begin;
+	int r=end;
+	int mid =(end+begin)/2; 
+	while(l < r){
+		while(tran[r]>=tran[mid]&&l<r){
+			r--;
+		}
+		swap(&tran[r],&tran[mid]);
+		mid=r;
+		while(tran[l]<=tran[mid]&&l<r){
+			l++;
+		}
+		swap(&tran[l],&tran[mid]);
+		mid=l;
+	}
+	quic(begin,mid-1);
+	quic(mid+1,end);
+	
+}
+int main(){
+	for(int i=0;i<5;i++){
+		scanf("%d",&tran[i]);		
+	}
+	quic(0,4);
+	for(int i=0;i<5;i++){
+		printf("%d",tran[i]);
+	}
+	return 0;
+}//快速排序法
