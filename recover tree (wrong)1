@@ -1,0 +1,89 @@
+#include<iostream>
+#include<cstring>
+#include<map>
+#include<cstring>
+#include<stack>
+#include<cmath>
+#include<map>
+using namespace std;
+map<int,int> ot;
+const int maxn=1000005;
+int lch[maxn],rch[maxn];
+string preorder,inorder;
+stack<char> out;
+void pr_t(int i){
+	if(i==0) return;
+	cout << preorder[i];
+	pr_t(lch[i]);
+	pr_t(rch[i]);
+	
+}
+//问题是当T1=T2时，返回的是P1的值 
+int build(int P1,int P2, int I1, int I2){
+	if(P1==P2){
+		return P1;
+	}else if(I1==I2){
+		return ot[I1];
+	}else if(P1>P2||I1>I2){
+		return 0;
+	}
+	int root=P1;
+	int temp=I1;
+	while(inorder[temp]!=preorder[P1])temp++;
+	int cnt=temp-P1;//左子树的个数 
+	lch[root]=build(P1+1,P1+cnt,I1,I1+cnt-1);
+	rch[root]=build(P1+cnt+1,P2,temp+1,I2);
+	return root;
+}
+
+void sp(int i){
+	out.push(preorder[i]);
+	//int temp_l=lch[root];
+	//int temp_r=rch[root];
+	if(rch[i]){
+		sp(rch[i]);
+	}else if(lch[i]){
+		sp(lch[i]);		
+	}
+	
+}
+
+void print(int i){
+	out.push(preorder[i]);
+	int root=i;
+	if(rch[root]){
+		sp(rch[root]);
+	}
+	if(lch[root]){
+		sp(lch[root]);
+	}
+	
+	
+}
+int main(){
+	memset(lch,0,sizeof(lch));
+	memset(rch,0,sizeof(rch));
+	while(cin >> preorder >> inorder){
+		
+		int length=preorder.length();
+		for(int i=0;i<length;i++){
+			for(int j=0;j<length;j++){
+				if(inorder[i]==preorder[j]){
+					ot[i]=j;
+				}
+			}
+			
+		}
+		build(0,length-1,0,length-1);
+		//pr_t(lch[0]);
+		//pr_t(rch[0]);
+		print(0);
+	
+		while(!out.empty()){
+			cout << out.top();
+			out.pop();
+		}
+		
+	}
+	return 0;
+}
