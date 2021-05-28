@@ -1,0 +1,65 @@
+#include<iostream>
+#include<utility>
+#include<vector>
+#include<queue>
+#include<map>
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+using namespace std;
+int fangwei[20][3]={{-2,-1},{-2,1},{2,-1},{2,1},{-1,-2},{1,-2},{-1,2},{1,2}};//上下左右 
+char a[5],b[5];
+int r_f,r_s;
+queue<int> jinru;
+map<int,int> turn;
+bool cunqu(int temp,int m){
+	int r=temp/10;int c=temp%10;
+	if(r==r_f&&c==r_s) {
+		cout <<"To get from "<< a[0] <<a[1] <<" to " << a[3] << a[4] <<" takes 0 knight moves.\n";
+		return 1;
+	}
+	for(int i=0;i<8;i++){
+//		turn[(r+fangwei[i][0])*10+c+fangwei[i][1]]=t;
+		if(r+fangwei[i][0]==r_f&&c+fangwei[i][1]==r_s){
+		 
+//			char t='a'+r;
+			//cout << temp <<"\n"; 
+		printf("To get from %c%c to %c%c takes %d knight moves.\n",a[0],a[1],a[3],a[4],m+1);
+			return 1;
+		}else if(r+fangwei[i][0]>0&&r+fangwei[i][0]<8&&c+fangwei[i][1]>0&&c+fangwei[i][1]<8){
+			jinru.push((r+fangwei[i][0])*10+c+fangwei[i][1]);
+			
+		}
+			
+	}
+	
+	
+	return 0;
+}
+
+void bfs(int &k){	 	
+	int length=jinru.size();
+	while(length--){
+		int temp=jinru.front();
+		if(cunqu(temp,k)){
+			return;		
+		}	
+		jinru.pop();		
+	}
+	
+	bfs(++k);
+}
+int main(){
+	while(fgets(a,100,stdin) ){
+		int t=1;
+		int a_f=a[0]-'a'+1;
+		int a_s=a[1]-'0';
+		r_f=a[3]-'a'+1;
+		r_s=a[4]-48;		
+		//pair<string,int>temp(a,0);
+		if(!cunqu(a_f*10+a_s,0) ){
+			bfs(t);
+		}
+		
+		while(!jinru.empty()) jinru.pop();	
+	}
+	
+} 
