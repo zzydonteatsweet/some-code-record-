@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+string pre,mid;
+void find(int r_pre,int r_mid,int e_pre,int e_mid){
+	int i=r_mid;//找到根节点
+	int l=r_pre; 
+	while(mid[i]!=pre[l]){i++;}
+	int len_l=i-r_mid;//左节点的个数 
+	int len_r=e_pre-r_pre-1;//右节点的个数 
+	if(len_l>=1)//左树不是叶 
+	find(r_pre+1,r_mid,r_pre+len_l,r_mid+len_l);
+	//else  cout << pre[r_pre+1];
+	if(r_pre+len_l+1<=e_pre)//右树不是叶 
+	find(r_pre+len_l+1,i+1,e_pre,e_mid);
+	//else cout << pre[r_pre];
+	cout << pre[r_pre];
+}
+int main(void){
+	cin >> pre >> mid;
+	int i=0;
+	find(0,0,pre.length()-1,mid.length()-1);	
+	
+}
