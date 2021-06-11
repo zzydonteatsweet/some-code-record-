@@ -1,0 +1,118 @@
+#include<iostream>
+#include<sstream>
+#include<cstring>
+#include<vector>
+#include<map>
+#include<queue>
+#include<algorithm>
+using namespace std;
+const int maxn=10000;
+
+int j=1;
+map<string,int>name;
+map<int,string>name2;
+string line,com,obj;
+vector<int> depend[maxn];//表示x依赖的组件
+vector<int> depend2[maxn];//表示依赖于x的组件
+vector<int> installed;
+int status[maxn];
+void buildco(int first,int last){
+	if(first==last) return;
+	depend[first].push_back(last);
+	depend2[last].push_back(first);
+}
+
+void install(int x,bool temp){
+	
+	if(!status[x]){
+		for(int i=0;i<depend[x].size();i++){
+			int temp=depend[x][i];
+			install(temp,false);
+		}
+		installed.push_back(x);
+		status[x]=temp?1:2;//1表示显示安装2表示显隐式安装
+		 cout << "   Installing " << name2[x] << "\n";
+	}else if(status[x]&&temp){
+		cout << "   " << name2[x] << " is already installed.\n";
+	}
+}
+
+bool check(int x){
+	for(int i=0;i<depend2[x].size();i++){
+		bool temp=0;
+		if(/*find(installed.begin(),installed.end(),depend2[x][i])!=installed.end()&&*/status[depend2[x][i]]){//表明查找成功
+		return false;
+			
+		}
+	}
+	return true;
+}
+
+void clear(int x){
+	/*vector<int>:: iterator it=installed.begin();
+	it=find(installed.begin(),installed.end(),x);
+	installed.erase(it);*/
+	installed.erase(remove(installed.begin(),installed.end(),x),installed.end());
+	status[x]=0;
+}
+void remove(int x,bool temp){
+	if((status[x]==1&&temp)||status[x]==2){//问题出处
+		bool t=0;
+		if(check(x) ){
+			cout << "   Removing " << name2[x] << '\n';
+			clear(x);
+		}else if(status[x]&&temp){
+			 cout << "   " << name2[x] << " is still needed.\n";
+		}
+		for(int i=0;i<depend[x].size();i++){//删除这个软件所依赖的组件
+			int temp=depend[x][i];
+			remove(temp,false);
+		}
+	}else if(!status[x]){//表明未安装
+		cout << "   " << name2[x] << " is not installed.\n";
+	}
+
+
+}
+int main(){
+	memset(status,0,sizeof(status) );
+	while(getline(cin,line)&&line!="END" ){
+		stringstream ss(line);
+		cout << line << '\n';
+		ss >> com;
+		if(com=="END"){
+			return 0;
+		}else if(com=="LIST"){
+			for(int i=0;i<installed.size();i++){
+				cout  << "   "<< name2[installed[i] ]<< '\n';
+			}
+		
+		}else {
+			string ts;
+			ss >> ts;
+			if(!name.count(ts) ){ name[ts]=j; name2[j++]=ts;}//给每一个新的组件赋值
+			int k=0;
+			if(com=="DEPEND"){
+				while(ss >> obj ){
+				
+					if(!name.count(obj) ){ name[obj]=j; name2[j++]=obj;}
+					int a=name[ts];
+					int b=name[obj];
+					buildco(a,b);
+				}
+			}else if(com=="INSTALL"){
+			
+				int temp=name[ts];
+				install(temp,true);
+		
+			}else if(com=="REMOVE"){
+				int temp=name[ts];
+				remove(temp,true);
+
+			}
+
+
+		}
+	}
+
+}
