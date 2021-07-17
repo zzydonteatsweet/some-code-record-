@@ -1,0 +1,38 @@
+#include<iostream>
+#include<cmath>
+#include<vector>
+using namespace std;
+vector<int>val[16];
+int main(){
+    int T,n;
+    cin >> T;
+    while(T--){
+        cin >> n;
+        int tot=0;
+       // int ok=1;//0表示不可以继续计算下去1表示可以继续算下去
+        int circle=0;
+        for(int i=0;i<n;i++){
+            int temp;
+            val[i].clear();
+            cin >> temp;
+            val[i].push_back(temp);
+            circle+=temp;
+        }
+       while(circle&&tot<=1000){
+            //进行计算，通过某一变量的值来看是否可以继续解决问题
+            //circle存储他们值的和
+            circle=0;
+            for(int i=0;i<n;i++){
+                if(i==n-1) val[i].push_back(abs(val[i][tot]-val[0][tot]));
+                else val[i].push_back(abs(val[i][tot]-val[i+1][tot]));
+                circle+=val[i][tot+1];
+            }
+            tot++;
+       }
+       if(circle)
+            cout << "LOOP\n";
+        else 
+            cout << "ZERO\n";
+    }
+    return 0;
+}
