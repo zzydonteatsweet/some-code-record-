@@ -1,0 +1,72 @@
+#include<iostream>
+#include<cstring>
+#include<map>
+#include<utility>
+#include<ctype.h>
+#include<string>
+using namespace std;
+//map<string,int> length;
+int length[123];
+map<char,map<int,int> > Array;
+int number(string a){//无错返回具体的数有错返回-1
+    int eos=a.find("]");
+    if(isalpha(a[0])){
+        int num=number(a.substr(2));
+        //a=a.substr(0,eos);
+        if(num>=length[a[0]]||num<0||!Array[a[0]].count(num)) return -1;
+        return Array[a[0]][num];
+    }else{
+        if(eos!=a.npos){
+            string b=a.substr(0,eos);
+            //printf("%s",b);
+            return atoi(b.c_str());
+        }else{
+            return atoi(a.c_str());
+        }
+    }
+}
+bool judge(string input){
+    int tar=input.find("=");
+    int tar_s=input.find("]");
+    if(tar!=input.npos){//赋值
+        string left=input.substr(2,tar_s-2);
+        string right=input.substr(tar+1);//会出现右括号也被带入进right中
+        //cout << "left是" << left << "right是" << right << '\n';
+        int nleft=number(left);
+        int nright=number(right);
+        if(nleft<0||nleft>=length[input[0]]||nright<0)
+            return false;
+        Array[input[0]][nleft]=nright;        
+    }else{//定义
+        int l_n=number(input.substr(2));
+        length[input[0]]=l_n;
+
+    }
+    return true;
+}
+int main(){
+    string a,b;
+    
+    for(;;){
+        cin >> a;
+        if(a==".") break;
+        int ok=0;
+        if(!judge(a)){
+            ok=1;
+        }
+        for(int i=2;true;i++){
+            //cout << "此时是在" << i << "行\n";
+            cin >> b;
+            if(b==".") break;
+            if(ok==0&&!judge(b)){
+                
+                ok=i;
+            }
+        }
+        printf("%d\n",ok);
+        //length.clear();
+        memset(length,0,sizeof(0));
+        Array.clear();
+    }
+
+}
