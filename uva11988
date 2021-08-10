@@ -14,7 +14,7 @@ int main(){
         int j=0;
         int last=0;
         link[0]=0;
-        for(int i=1;i<=n+1;i++){
+        for(int i=1;i<=n;i++){
             if(input[i]=='['){//home键光标变成第一个
                 j=0;
             }else if(input[i]==']'){//end键光标变成最后一个
