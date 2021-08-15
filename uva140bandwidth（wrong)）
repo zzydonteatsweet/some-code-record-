@@ -1,0 +1,71 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<vector>
+#include<algorithm>
+using namespace std;
+char input[10000];
+int letter[10000];
+int id[10000];
+int pos[20];
+vector<int>first;
+vector<int>second;
+int main(){
+    while(scanf("%s",input)){
+        if(input[0]=='#') break;
+        int n=0;//出现几个字母的数量
+        //处理输入
+        for(int i='A';i<='Z';i++){
+            if(strchr(input,i)!=NULL){
+                id[i]=n;
+                letter[n++]=i;
+            }
+        }
+        //对于无向图的各项进行连接
+        int p=0,q=0;
+        int len_i=strlen(input);
+        while(1){
+            while(p<len_i&&input[p]!=':'){
+                p++;
+            }
+            if(p>=len_i) break;
+            while(q<len_i&&input[q]!=';') {
+                q++;
+            }
+            for(int i=p+1;i<q;i++){
+                first.push_back(id[input[p-1]]);
+                second.push_back(id[input[i]]);
+            }
+            p++; q++;
+        }
+        int P[20],len=n;
+        int bestP[20];
+        int pos[20];
+        
+        for(int i=0;i<n;i++){
+            P[i]=i;
+        }
+        //枚举排列选出最好的排列
+        do{
+            int bandwidth=0;
+            for(int i=0;i<n;i++){
+                pos[P[i]]=i;
+            }
+            for(int j=0;j<first.size();j++){//选出这个轮回当中最大的带宽
+                bandwidth=max(bandwidth,abs(pos[first[j]]-pos[second[j]]));
+                if(bandwidth>=len) break;
+            }
+            if(bandwidth<len){
+                len=bandwidth;
+                memcpy(bestP,P,sizeof(P));
+            }
+        }while(next_permutation(P,P+n));
+        for(int i=0;i<n;i++){
+            printf("%c ",letter[bestP[i]]);
+        }
+        printf("-> %d\n",len);
+    }
+
+
+
+}
