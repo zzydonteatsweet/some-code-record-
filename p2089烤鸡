@@ -1,0 +1,42 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+vector<int>output[10];
+const int maxn=10000;
+int tot,temp[maxn],num;
+int n,t=0;
+int dfs(int cur,int n){
+    if(cur==9){
+        for(int i=0;i<9;i++){
+            output[num].push_back(temp[i]);
+        }
+        output[num].push_back(n);
+        num++;
+        return 1;
+    }else{
+        for(int j=1;j<=3;j++){
+            if(n-j>=(9-cur)&&n-j<=(9-cur)*3){
+                temp[cur]=j;
+                dfs(cur+1,n-j);
+                temp[cur]=0;
+            }
+        }
+    }
+    return 0;
+}
+
+int main(){
+    num=0;
+    cin >> n;
+    tot=n;
+    if(n>30||n<10) {printf("0\n"); return 0;}
+    //当枚举出一个配料但剩余美味程度之和小于最小总质量时便剪
+    dfs(0,n);
+    printf("%d\n",num);
+    for(int i=0;i<num;i++){
+        for(int j=0;j<10;j++)
+            cout << output[i][j] << ' ';
+        putchar('\n');
+    }
+
+}
