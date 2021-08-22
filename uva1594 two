@@ -1,0 +1,56 @@
+#include<iostream>
+#include<set>
+#include<vector>
+#include<cmath>
+using namespace std;
+int n;
+set<vector<int> >have_examined;
+vector<int>inside;
+vector<int>outside;
+bool examine(){
+
+	do{
+		have_examined.insert(inside);
+		outside=inside;
+		for(int i=0;i<n;++i){
+			if(i<n-1){
+				inside[i]=abs(outside[i]-outside[i+1]);
+			}else{
+				inside[i]=abs(outside[i]-outside[0]);
+			}
+		}
+	}while(!have_examined.count(inside));
+	bool q=0;
+	for(int i=0;i<n;++i){
+		if(inside[i]!=0) {
+			q=1;
+			
+		}		
+	}
+	if(q){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+int main(){
+	int N;
+	cin >> N;
+	while(N--){
+		inside.clear();
+		cin >> n;
+		for(int i=0;i<n;++i){
+			int temp;
+			cin >> temp;
+			inside.push_back(temp);						
+		}
+		if(examine()){
+			cout << "LOOP\n";		
+		}else{
+			cout <<"ZERO\n";
+		}
+		
+	}
+	return 0;
+}
