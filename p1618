@@ -1,0 +1,63 @@
+#include<iostream>
+#include<vector>
+#include<cstring>
+#include<stdlib.h>
+using namespace std;
+int number[11];
+int a,b,c;
+vector<int> out;
+bool check(int z,int x,int v){
+    int temp[11];
+    memcpy(temp,number,sizeof(number) );
+
+    int one=z*100+x*10+v;
+    int w_check[2];
+    w_check[0]=one*b/a;
+    w_check[1]=one*c/a;
+    for(int i=0;i<2;i++){
+        if(w_check[i]>987) return 0;
+        int q=w_check[i]/100;//百位数
+        int w=w_check[i]%100/10;
+        int e=w_check[i]%10;
+        if(!temp[q]||!temp[w]||!temp[e]||q==e||w==e||q==w){
+            return 0;
+        }
+        temp[q]=0;
+        temp[w]=0;
+        temp[e]=0;
+    }
+    return 1;
+}
+int main(){
+    
+    memset(&number[1],1,sizeof(number));
+    cin >> a >> b >> c;
+
+    for(int i=1;i<10;i++){
+        if(!number[i]) continue;
+        number[i]=0;
+        for(int j=1;j<10;j++){
+            if(!number[j]) continue;
+            number[j]=0;
+            for(int k=1;k<10;k++){
+                if(!number[k]) continue;
+                number[k]=0;
+                if(check(i,j,k)){
+                    //system("pause");
+                    //cout << i*100+j*10+k << '\n';
+                    out.push_back(i*100+j*10+k);
+                    
+                }
+                number[k]=1;
+            }
+            number[j]=1;
+        }
+        number[i]=1;
+    }
+    if(out.size())
+        for(int i=0;i<out.size();i++){
+            cout << out [i] << ' ' << out[i]*b/a << ' ' << out[i]*c/a << '\n';
+        }
+    else cout << "No!!!\n";
+
+}
