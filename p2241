@@ -1,0 +1,28 @@
+#include<iostream>
+#include<algorithm>
+#include<stdlib.h>
+using namespace std;
+//只枚举第0行和第0列然后乘上行数列数
+//第二种方法枚举
+int main(){
+    int l,w;
+    cin >> l >> w;
+    long long squ_z=0,squ_c=0;
+    //枚举出正方形和长方形然后对图中进行比对
+    for(int i=1;i<=l;i++){
+        int ln=l-i+1;
+        //int wn=w-i+1;
+        //int n=ln*wn;
+        //cout << n;
+        //system("pause");
+        for(int j=1;j<=w;j++){
+            int wn=w-j+1;
+            int n=ln*wn;
+            if(i==j) squ_z+=n;
+            else{
+                squ_c+=n;
+            }
+        }
+    }
+    cout << squ_z << ' ' << squ_c;
+}
