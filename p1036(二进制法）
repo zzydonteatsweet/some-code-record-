@@ -1,0 +1,34 @@
+#include<iostream>
+using namespace std;
+int n,p;
+int A[23];
+int B[23];
+int num=0;
+bool is_prime(int sum){
+    for(int i=2;i<sum;i++){
+        if(sum%i==0) return 0;
+    }
+    return 1;
+}
+int subset(int n,int k){
+    int sum=0,time=0;
+    for(int i=0;i<n;i++){
+        if(k&(1<<i)){
+            sum+=A[i];
+            time++;
+        }
+    }
+    if(time==p&&is_prime(sum)){
+        num++;
+    }
+}
+int main(){
+    cin >> n >> p;
+    for(int i=0;i<n;i++){
+        cin >> A[i];
+    }
+    for(int i=0;i<(1<<n);i++){//枚举所有可能
+        subset(n,i);
+    }
+    cout << num;
+}
