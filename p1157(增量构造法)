@@ -1,0 +1,24 @@
+#include<iostream>
+using namespace std;
+int n,r,num=0;
+int A[23];
+int subset(int *A,int cur,int have_left,int start){
+    if(have_left==0){
+        for(int i=0;i<r;i++){
+            printf("%3d",A[i]);
+        }
+        putchar('\n');
+        return 1;
+    }else{
+        for(int i=start;i<=n;i++){
+            A[cur]=i;
+            subset(A,cur+1,have_left-1,i+1);
+        }
+    }
+    return 0;
+}
+int main(){
+    cin >> n >> r;
+    subset(A,0,r,1);
+    
+}
