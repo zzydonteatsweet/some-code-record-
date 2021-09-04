@@ -1,0 +1,31 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+int permutation(int n,int cur,int *A,int *B){
+    if(cur==n){
+        for(int i=0;i<n;i++){
+            printf("%5d",A[i]);
+
+        }
+        putchar('\n');
+    }
+    for(int i=1;i<=n;i++){
+        if(!B[i]){
+            A[cur]=i;
+            B[i]=1;
+            permutation(n,cur+1,A,B);
+            B[i]=0;
+
+        }
+
+    }
+}
+int main(){
+    int n;
+    cin >> n;
+    int A[10];
+    int B[10];
+    memset(B,0,sizeof(B));
+    permutation(n,0,A,B);
+
+}
