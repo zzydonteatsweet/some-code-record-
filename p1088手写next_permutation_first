@@ -1,0 +1,41 @@
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int A[10005];
+int C[10005];
+int D[10005];
+int tot=-1;
+int n,m;
+int recur(int cur,int *B){
+    if(cur==n){
+        tot++;
+        return 0;
+    }
+    
+    for(int i=1;i<=n;i++){//每次递归完成后加上判断是否进行完成的判断语句
+        if(A[cur]==i||D[cur]){
+            if(!C[i]){
+                B[cur]=i;
+                C[i]=1;
+                recur(cur+1,B);
+                C[i]=0;
+            }
+            if(tot==m) return 0;
+            D[cur]=1;
+        }
+    }
+}
+int main(){//将外星人的数字设为初始数字进行递归
+    cin >> n >> m;
+    for(int i=0;i<n;i++){
+        cin >> A[i];
+    }
+    int B[10005];
+    memcpy(B,A,sizeof(A) );
+    recur(0,B);
+    for(int i=0;i<n;i++){
+        printf("%d ",B[i]);
+    }
+    //printf("\n%d",tot);
+}
