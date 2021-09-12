@@ -1,0 +1,95 @@
+//我的天，程序都搞出来了结果一直re，都急了，发现把long long 类型的定义变成全局变量放在堆区就行了
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+int lef[100005];//n的左边是哪个数字
+//n的右边是哪个数字
+int righ[100005];
+bool inv=1;
+long long all=0,tot=0,temp=0,k=0;
+inline int link(int one,int two){
+    lef[two]=one; righ[one]=two;
+}
+int swap(int one,int two){
+    if(righ[one]==two){
+        int a=righ[two];
+        link(lef[one],two); link(two,one); link(one,a);
+    
+    }else if(righ[two]==one){
+        int a=righ[one];
+        link(lef[two],one); link(one,two); link(two,a);
+
+    }else{
+        int a=lef[one],b=righ[one];
+        link(lef[two],one); link(one,righ[two]);
+        link(a,two); link(two,b);
+    }
+}
+int main(){
+    int n,m,num=1;
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+    while(cin >> n >> m){
+        inv=1;
+        for(int i=0;i<=n;i++){
+            lef[i]=i-1;
+            righ[i]=i+1;
+        }
+        lef[0]=n; righ[n]=0;
+
+        while(m--){
+            //for(int i=righ[0];i!=0;i=righ[i]){
+            //    printf("%3d",i);
+            //}
+                /*int temp=0;
+            for(int i=0;i<n;i++){
+                printf("%3d",righ[temp]);
+                temp=righ[temp];
+            }*/
+            //putchar('\n');
+            int com;
+            scanf("%d",&com);
+            if(com==4){inv=!inv; continue;}
+            if(com==6){break;}
+            int one,two;
+            scanf("%d%d",&one,&two);
+            //swap
+            if(com==3){
+                swap(one,two);
+                continue;
+            }
+            //left
+            if((com==2&&!inv||com==1&&inv&&righ[one]!=two) ){
+                link(lef[one],righ[one]); link(lef[two],one); link(one,two);
+                continue;
+            }
+            //right
+            if((com==1&&!inv||com==2&&inv)&&righ[two]!=one){
+                link(lef[one],righ[one]); link(one,righ[two]); link(two,one);
+                continue;
+            }
+
+
+        }
+        all=0,tot=0,temp=0,k=0;
+        while(temp<n){
+            if(temp%2==0){
+                tot+=righ[k];
+            }
+            all+=righ[k];
+            temp++;
+            k=righ[k];
+        }
+        /*temp=0;
+        for(int i=0;i<n;i++){
+            printf("%3d",righ[temp]);
+            temp=righ[temp];
+        }
+        putchar('\n');*/
+        if(inv||n%2){
+            printf("Case %d: %lld\n",num++,tot);
+        }else{
+            printf("Case %d: %lld\n",num++,all-tot);
+        }
+    }
+}
