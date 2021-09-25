@@ -1,0 +1,85 @@
+/*
+  在写代码时出现了哥小bug get_first函数返回的值有可能比前一个保存的数小，不知这一点所以在数据19 45中出现了6 5 18 的结果，后来我的想法是加一个判断数是否比前一个大，但是刘汝佳的方法
+  更简单，直接在dfs递归时将from项变成from+1项。
+*/
+
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+typedef long long LL;
+const int maxe=1005;
+LL v[maxe];
+LL ans[maxe];
+int maxd;
+int a,b;
+bool isget=false;
+//a/b
+LL gcd(int a,int b){
+    return b==0?a:gcd(b,a%b);
+}
+bool better(int dep){
+    for(int i=dep;i>=0;i--){
+        if(v[i]!=ans[i]){
+            return v[i]<ans[i]|| ans[i]==-1;
+        }
+    }
+    return false;
+}
+inline LL get_first(LL a,LL b){
+    return b/a+1;
+}
+//dfs和bfs的结合
+bool dfs(int dep,LL from,LL a,LL b){
+    if(dep==maxd){
+        if(b%a){
+            return false;
+        }
+        v[dep]=b/a;
+        if(better(dep)){
+            memcpy(ans,v,sizeof(LL)*(dep+1) );            
+        }
+        return true;
+    }
+    
+    from=max(from,get_first(a,b));
+    for(int i=from;;i++){
+        //a/b>=(maxd-dep)*(1/i)
+        if((maxd-dep+1)*b<=a*i){
+            break;
+        }
+        if(dep>=1&&i<=v[dep-1]){
+            continue;
+        }
+        v[dep]=i;
+        LL aa=a*i-b;
+        LL bb=b*i;
+        if(aa<0) continue;
+        int g=gcd(aa,bb);
+        if(dfs(dep+1,get_first(aa,bb),aa/g,bb/g) ){
+            isget=true;
+            
+        }
+    }
+    return isget;
+}
+int main(){    
+    while(cin >> a >> b){
+        int ok=0;
+        memset(ans,-1,sizeof(ans));
+        for(maxd=0;maxd<=100;maxd++){
+            if(dfs(0,get_first(a,b),a,b)){ok=1; break;}
+        }
+        if(ok){
+            cout << "maxd is " << maxd << '\n';
+            for(int i=0;i<maxd;i++){
+                cout << "1/" << ans[i] << "+";
+            }
+            cout << "1/" << ans[maxd];
+        }else{
+            cout << "no solution!";
+        }
+    }
+
+
+}
