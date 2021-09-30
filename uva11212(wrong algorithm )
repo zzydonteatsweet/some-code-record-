@@ -1,0 +1,84 @@
+//虽然是错的但是我觉得可以记录一下，也是一种思路
+#include<iostream>
+#include<algorithm>
+#include<queue>
+
+#include<cstring>
+using namespace std;
+const int maxn=8;
+int n;
+int input[20];
+int index[20];
+int IDA(int dep,int maxd,int A[],int dex[]){
+    if(dep>maxd) return 0;
+    //先判断是否顺序
+    int wn=0;
+    bool ok=1;
+    for(int i=0;i<n;i++){
+        if(A[i+1]!=A[i]+1){
+            ok=0;
+            wn++;            
+        }
+        dex[A[i]]=i;
+    }
+    if(ok) return dep;
+    //判断减枝
+    if(3*dep+wn>3*maxd){
+        return 0;
+    }
+    //进行循环
+    int B[20];
+    int index2[20];
+    queue<int>insert;
+    for(int i=0;i<n;i++){
+        //如果A[i]和A[i+1]不相同则进行交换然后递归判断
+        if(A[i]+1!=A[i+1]){
+            memcpy(B,A,sizeof(B));
+            memcpy(index2,dex,sizeof(dex));
+            insert.push(B[i]+1);
+            int loc=dex[B[i]+1];
+            int loc2=loc;
+            while(B[loc2+1]==B[loc2]+1){
+                insert.push(B[loc2+1]);
+                loc2++;
+            }
+            for(int k=loc-1;k>i;k--){
+                B[k+insert.size()]=B[k];
+            }
+            int p=insert.size();
+            for(int k=i+1;k<=i+p;k++){
+                B[k]=insert.front();
+                insert.pop();
+            }
+            int temp=IDA(dep+1,maxd,B,index2);
+            if(temp){
+                return temp;
+            };
+        }
+    }    
+
+}
+int main(){
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int turn=0;
+    while(cin >> n&&n){
+        for(int i=1;i<=n;i++){
+            cin >> input[i];
+            index[input[i] ]=i;
+        }
+        int result=0;
+        int maxd=0;
+        for(int i=1;i<=5;i++){
+            result=IDA(0,i,input,index);
+            if(result){         
+                maxd=i;       
+                break;
+            }
+        }
+
+        cout << "Case:" << ++turn << "  "<< result << '\n';
+        cout << "Maxd is " << maxd << '\n';
+    }
+}
+
