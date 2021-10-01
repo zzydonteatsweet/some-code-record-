@@ -1,0 +1,91 @@
+#include<iostream>
+#include<algorithm>
+#include<queue>
+#include<cstring>
+using namespace std;
+const int maxn=8;
+int n;
+int input[20];
+//int index[20];
+bool IDA(int dep,int maxd, int A[]){
+    if(dep>maxd) return 0;
+    //先判断是否顺序
+    int wn=0;
+    bool ok=1;
+    //判断不正确得数字刘汝佳用的后继节点判断，我一开始用的前驱节点但后来图方便就改成后继了
+    for(int i=0;i<n-1;i++){
+        if(A[i+1]!=A[i]+1){
+            ok=0;
+            wn++;            
+        }
+        //dex[A[i]]=i;
+    }
+    if(A[n-1]!=n) wn++;
+    if(ok) {
+        /*for(int i=0;i<n;i++){
+            printf("%2d",A[i]);
+        }   
+        putchar('\n');
+        */
+        return true;
+    }
+    //判断减枝
+    if(3*dep+wn>3*maxd){
+        return 0;
+    }
+    int B[20];
+    for(int i=0;i<n;i++){
+        //抽取i~j的元素
+        for(int j=i;j<n;j++){
+            int b[20]; int cnt=0;
+            for(int k=0;k<n;k++){
+                if(k<i||k>j){
+                    b[cnt++]=A[k];
+                }
+            }
+            //将数据插入k之前
+
+            for(int k=0;k<=cnt;k++){
+                int temp=0;
+                for(int p=0;p<k;p++){B[temp++]=b[p];}
+                for(int p=i;p<=j;p++){B[temp++]=A[p];}
+                for(int p=k;p<cnt;p++){B[temp++]=b[p];}
+                if(IDA(dep+1,maxd,B)){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+int main(){
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int turn=0;
+    while(cin >> n&&n){
+        for(int i=0;i<n;i++){
+            cin >> input[i];
+            //index[input[i] ]=i;
+        }
+        //int result=0;
+        int maxd=0;
+        bool temp=1;
+        for(int i=0;i<n-1;i++){
+            if(input[i]+1!=input[i+1]){
+                temp=0;
+                break;
+            }
+        }
+        
+        if(!temp){
+            for(int i=1;i<=5;i++){
+                if(IDA(0,i,input)){         
+                    maxd=i;       
+                    break;
+                }
+            }
+        }
+        printf("Case %d: %d\n",++turn,maxd);
+        //cout << "Maxd is " << maxd << '\n';
+    }
+}
