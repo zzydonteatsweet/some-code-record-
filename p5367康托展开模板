@@ -1,0 +1,71 @@
+//这道题的意思是给你一个n，n个数字组成的排序，让你判断这个组合在这n个数字组成的全排列中排第几
+//康托展开就是通过数学方法计算这个排列的名次
+/*例如5个数的排列41325   比以4开头的的最小的排列还要小的排列有3*4!这样第一个数就弄好了，第二个数，比1小的有0个，第三个数，原本比以三开头的最凶啊三位排列还小的排列有2*2！但
+前面已经有一了所以3的2要减一变成1*1!,5中比5小的数已经在前面全部出现过了，所以第五位数的值就是0.简单的来说就是每一位数看之后的数有几位是比它小的，那这一位数所对应的值就是几再乘以相应的阶乘*/
+
+/*这就是相应的康托展开了，但要ac这道题光是康托展开的枚举是不够的，因为他的输入的数字的位数可以达到100000.所以这时就要使用一个数据结构树状数组，这个结构一部分的特点就是单点修改，区间查询。
+详细请见：https://www.cnblogs.com/xenny/p/9739600.html
+例：在此题中需要检查还没出现的元素中比当前元素小的元素的个数，如果不用树状数组，就达到O(n^2)了，但用树状数组查询修改的时间复杂度就是O(n∗lnn)。所以又需要用到树状数组，下面简要介绍树状数组。
+树状数组只能存储处理前缀的的各种运算像什么差分，和之类的。以此题为例，需要查询每一个输入的数值目前的还没出现的数中比它小的数。，所以树状数组tree[maxn]中每一个元素的值就是它所能管辖到的区域的值之和。
+下面介绍一下进行树状数组cur的移动的运算lowbit运算，lowbit运算利用了二进制的性质，数组中为0的cur的lowbit是0，cur为奇数的话，lowbit是1，cur是偶数的话，lowbit是2^k。k是这个数的二进制中从右向左的0的
+最大个数。lowbit(1)=1  lowbit(2)=4  lowbit(3)=1   lowbit(4)=8   lowbit(8)=16. 所以就可以就此判断为什么树状数组省时间。正常枚举时，修改k需要枚举更改后面n-k个元素，但是使用树状数组的话，假如k是
+二n是16，只需lowbit运算三次就可枚举到16，奇数lowbit一次便可到达上方的偶数所以lowbit运算省时间。
+
+用lowbit运算查询他的值时，只需循环向下减lowbit查询数组中的值。偶数可以直接得到结果，奇数向下减lowbit可得偶数
+下面时p5367的代码
+
+
+#include<iostream>
+#include<cstring>
+using namespace std;
+//int jiec[]={0,1,2,6,24,120,720};
+long long jiec[1000005];
+long value[1000005];
+long a[1000005];
+int n;
+const long mod=998244353;
+inline int lowbit(int x){
+    return x&-x;
+}
+//向上更新树状数组的值
+void update(int x,int y){
+    while(x<=n){
+        //if(a[x]+y>=0){
+            a[x]+=y;
+            
+        //}
+        x+=lowbit(x);
+    }
+
+}
+//向下查询树状数组的值
+long long  query(int x){    
+    long long ans=0;
+    for(int i=x;i>0;i-=lowbit(i)){
+        
+            ans+=a[i];
+        
+    }
+    return ans;
+}
+int main(){
+    
+   while(cin >> n){
+        long long sum=0;
+        memset(a,0,sizeof(a));
+        memset(value,0,sizeof(value));
+        jiec[0]=1;
+        for(int i=1;i<=n;i++){
+            cin >> value[i];
+            //a[value[i] ]=value[i]-1;
+            update(i,1);   
+            
+            jiec[i]=(jiec[i-1]*i)%mod;//阶乘需要取余，我因为阶乘没有取余算了TM好半天
+        }
+        for(int i=1;i<=n;i++){
+            sum=(sum+((query(value[i])-1)*jiec[n-i])%mod)%mod;
+            update(value[i],-1);
+        }   
+        printf("%lld",(sum+1)%mod);
+    }
+}
