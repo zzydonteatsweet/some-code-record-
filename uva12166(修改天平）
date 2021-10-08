@@ -1,0 +1,83 @@
+/*
+  这道题的意思是给出一个二叉树型的天平，让你看出最少需要修改多少个重量才能让整个天平平衡，且每一个天平都是被线连在中间
+
+1.如何检索字符串
+  Ⅰ.最先想到的就是递归，找到字符串中位于此时层级的中间逗号，然后向左向右分别递归，从最开始的‘[’的下一个开始计算有多少个'['和‘]’当两者持平的时候找到的','就是位于中间的逗号，然后遇见数字就计算
+  Ⅱ.从最开始每次遇见一个'['depth就++遇见一个‘]’depth就--，遇见数字就开始计算
+2.如何修改重量
+  最开始我想到的是，找一个公式来对整个的砝码的重量进行判断来计算，但后来看解析想到，目的是求出要修改的最少砝码重量数，所以肯定就有砝码是不需要修改的。这时就可以，判断某一个砝码不变然后计算要改变
+  的数量。这时可以判断出，当二叉树的结构不变的时候，某一种重量的分配，会导致的整个天平的重量是不变的。这时我们就可以通过枚举不同重量配比的情况下得到出现最多的重量，这个重量出现的次数就是将重量
+  改成这个样子时，不需改变的重量数。需要改变的最少重量数就是所有的砝码数减去不需改变的最多重量数。那么枚举每一个重量时。通过 m*2^depth 就可以求出。
+*/
+//循环
+//map清空，
+//递归分析字符串
+//用最大值减去最小值
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<map>
+using namespace std;
+string s;
+map<long long, int >value;
+long long cou;
+long long parseInt(int fir,int sec){
+    long long sum=0;
+    for(int i=fir;i<=sec;i++){
+        sum=sum*10+s[i]-'0';
+    }
+    return sum;
+}
+//这里采用的是递归的方法进行查询字符串
+void parse(int fir,int sec,int dep){
+    if(sec<fir) return;
+    int c=0;
+    int i;
+    for( i=fir+1;i<sec;i++){
+        if(s[i]=='['){
+            c++;
+        }else if(s[i]==']'){
+            c--;
+        }else if(s[i]==','&&!c){
+            break;  
+        }
+    }
+    if(isdigit(s[fir+1])&&isdigit(s[i-1])){
+        cou++;
+        long long w=parseInt(fir+1,i-1);
+        //cout << "cou is :" << cou  << '\n' << "w is :" << w << '\n';
+        //cout << "dep is :" << dep << '\n';
+        //cout << "面积是 " << w*pow(2,dep) << '\n';
+        value[w*pow(2,dep)]++;
+    }else{
+        parse(fir+1,i-1,dep+1);
+    }
+    if(isdigit(s[i+1])&&isdigit(s[sec-1])){
+        cou++;
+        long long w=parseInt(i+1,sec-1);
+       //cout << "cou is :" << cou << '\n' << "w is :" << w << '\n';
+        //cout << "dep is :" << dep << '\n';
+        //cout << "面积是 " << w*pow(2,dep) << '\n';
+        value[w*pow(2,dep)]++;
+    }else{
+        parse(i+1,sec-1,dep+1);
+    }
+}
+int main(){
+    int n;
+    cin >> n;
+    
+    while(n--){
+        value.clear();
+        cou=0;
+        int maxd=0;
+        cin >> s;
+        if(!isdigit(s[0])){
+            parse(0,s.size()-1,1);
+            for(auto &i:value){
+                maxd=max(maxd,i.second);
+            }
+        }
+        cout << cou-maxd << '\n';
+    }
+}
