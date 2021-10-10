@@ -1,0 +1,27 @@
+//输入
+//通过公式n-n/p 递归进入n/p/p这样可以找出i*p的范围在n/p内的还没有被找到的元素
+//最后输入
+#include<iostream>
+using namespace std;
+long long n,p;
+long long work(int n,int p){
+    if(!n){
+        return 0;
+    }
+    return work(n/p/p,p)+n-n/p;
+}
+int main(){
+    int T;;
+    cin >> T;
+    ios::sync_with_stdio(false);
+    while(T--){
+        cin >> n >> p;
+        long long sum=0;
+        if(p>1){
+            sum=work(n,p);
+            printf("%lld\n",sum);
+        }else{
+            printf("0\n");
+        }
+    }
+}
