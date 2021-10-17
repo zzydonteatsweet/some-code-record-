@@ -1,0 +1,108 @@
+#include<iostream>
+#include<cmath>
+#include<cstring>
+using namespace std;
+int bgn,en;
+int fwei=0,ewei=0;
+//endwei从1开始枚举
+bool output(int value[],int cur,int endwei){
+    //从最开始枚举到最后一个数位，这样形成顺序结构
+    //加一个判断到达bit位就输出
+    int bit=endwei%2?endwei/2:endwei/2-1;
+    if(cur>bit) return true;
+    value[0]=value[0]%2?value[0]:value[0]+1;
+    int k=cur?1:2;
+    for(int i=value[cur];i<=9;i+=k){
+        value[cur]=i;
+        //到达输出位
+        if(cur==bit){
+            //算出值
+            int result=0;
+            for(int m=0;m<=bit;m++){
+                if(endwei%2&&m==bit){
+                    result+=value[m]*pow(10,endwei-m-1);
+                }else{
+                    result+=value[m]*pow(10,endwei-m-1)+value[m]*pow(10,m);
+                }
+            }
+            //检查是不是素数
+            if(result%6!=1&&result%6!=5){
+                continue;
+            }
+            int r=sqrt(result)+1;
+            bool okk=1;
+            for(int i=2;i<r;i++){
+                if(result%i==0){
+                    okk=0;
+                    break;
+                }
+            }
+            if(!okk) continue;
+            //检查值是不是比限定值大
+            if(result>en) return false;
+            printf("%d\n",result);
+        }
+        
+        if(!output(value,cur+1,endwei) ){
+            return false;
+        }else if(cur<bit){
+            for(int i=cur+1;i<=bit;i++){
+                value[i]=0;
+            }
+
+        }
+            
+        
+    }
+    return true;
+}
+void judge(int wei,int sta){
+        int value[6];
+        int k=0;
+        //把每一位的数字都取出来然后存入数组中
+        for(k=0;k<wei;){
+            int temp=(float)sta/pow(10,wei-k-1);
+            temp%=10;
+            value[k++]=temp;
+        }
+        if(k==2){
+            printf("11\n");
+            k=k+1;
+        }
+        if(k%2==0) {
+            k+=1;
+            memset(value,0,sizeof(value));
+            value[0]=1;
+        }
+
+        for(int i=k;i<=ewei;i+=2){
+            if(i==9) continue;
+            output(value,0,i);
+            //每次循环完后设置为1000.。。。方便下一次的运算
+            memset(value,0,sizeof(value));
+            value[0]=1;
+            //if(i==1) printf("11\n");
+        }
+        
+        
+                   
+         
+}
+int main(){
+    
+    cin >> bgn >> en;
+    
+    int temp=bgn;
+    while(temp){
+        fwei++;
+        temp/=10;
+    }
+    temp=en;
+    while(temp){
+        ewei++;
+        temp/=10;
+    }
+    //printf("开始的位数是%d，结束的位数是%d\n",fwei,ewei);
+    judge(fwei,bgn);
+
+}
