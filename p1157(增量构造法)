@@ -1,3 +1,4 @@
+这是通过dfs枚举出子集组合的方法，r是枚举的位数，n是选择的数
 #include<iostream>
 using namespace std;
 int n,r,num=0;
