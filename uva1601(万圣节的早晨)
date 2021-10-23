@@ -1,0 +1,132 @@
+//题目的意思是给出一个图，图中有墙壁，有鬼，你需要把鬼放入相应的位置中，小写字母表示鬼，大写字母表示你要把鬼放入的位置，
+下面是给出的输入，先是w(宽度)h(长度)n(鬼的个数),然后是图。鬼的移动可以是向上向下，向左向右也可以不动
+5 5 2
+#####
+#A#B#
+#   #
+#b#a#
+#####
+
+#include<iostream>
+#include<queue>
+#include<cctype>
+#include<cstring>
+#include<string>
+using namespace std;
+char input[25][25];
+int x[200],y[200],deg[200];
+int starting[3],ending[3];
+int dnt;
+int w,h,n;
+int loc[25][25];
+int G[200][200];
+int dx[]={0,1,0,-1,0};//不动，向下，向右，向左，向上
+int dy[]={0,0,1,0,-1};
+//记录状态
+int dist[200][200][200];
+//vector<int>point[25];
+
+bool conflict(int a1,int a2,int b1,int b2){
+    //a2==b2表示的是两个点同时占到了一个位置
+    //a1==b2&&a2==b1表示两个鬼交换位置
+    if((a1==b2&&a2==b1)||a2==b2) return true;
+    return false;
+}
+//这是这道题很重要的技巧之一，编码，通过这种方法将a,b,c三个点通过哈希导入一个点，就不用再写结构体了，直接用queue<int>就可以存储
+inline int ID(int a,int b,int c){
+    return (a<<16)|(b<<8)|c;
+}
+int bfs(){
+    queue<int> d;
+    int render=ID(ending[0],ending[1],ending[2]);
+    //int trip=-1;
+    d.push(ID(starting[0],starting[1],starting[2]) );
+    dist[starting[0]][starting[1]][starting[2]]=0;
+    if(d.front()==render) return 0;
+    while(!d.empty()){
+        int u=d.front(); d.pop();
+        int a=(u >> 16)&0xff,b=(u >> 8)&0xff,c=u&0xff;
+        if(a==ending[0]&&b==ending[1]&&c==ending[2]){
+            return dist[a][b][c];
+        }
+        //不断bfs
+        for(int i=0;i<deg[a];i++){
+            int t1=G[a][i];
+            for(int j=0;j<deg[b];j++){
+                int t2=G[b][j];
+                if(conflict(a,t1,b,t2)){
+                    continue;
+                }
+                for(int k=0;k<deg[c];k++){
+                    int t3=G[c][k];
+                    if(conflict(a,t1,c,t3)||conflict(b,t2,c,t3)) continue;
+                    //先前已经将dist数组全部存为-1，-1就表示这个状态没有走过，否则值就是这个位置所走过的步数
+                    if(dist[t1][t2][t3]==-1) {
+                        dist[t1][t2][t3]=dist[a][b][c]+1;
+                        d.push(ID(t1,t2,t3));
+                    }
+                }
+            }
+        }
+        
+    }
+
+
+    //return trip;
+}
+
+
+int main(){
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    while(scanf("%d%d%d\n",&w,&h,&n)&&n){
+        dnt=0;
+        //memset(loc,-1,sizeof(loc) );
+        //这也是学到的新的输入方法，用这个输入速度会更快
+        for(int i=0;i<h;i++){
+            fgets(input[i],20,stdin);
+        }
+        //列出所有节点
+        for(int i=0;i<h;i++){
+            for(int j=0;j<w;j++){
+                if(input[i][j]!='#'){
+                //这里用到了一个建图法，可以大大减少bfs时的速度，就是将每个可以走的位置用记号标出来，这样
+                //扫描时就只用扫描已经标出来的位置
+                    if(islower(input[i][j])){
+                        x[dnt]=i; y[dnt]=j; loc[i][j]=dnt;
+                        starting[input[i][j]-'a']=dnt++;
+                    }else if(isupper(input[i][j])){
+                        x[dnt]=i; y[dnt]=j; loc[i][j]=dnt;
+                        ending[input[i][j]-'A']=dnt++;
+                    }else{
+                        x[dnt]=i; y[dnt]=j; loc[i][j]=dnt++;
+                    }
+                }
+            }
+        }
+
+
+        //建图
+        for(int i=0;i<dnt;i++){
+            deg[i]=0;
+            for(int j=0;j<5;j++){
+                int nx=x[i]+dx[j],ny=y[i]+dy[j];
+                //原来我用的时loc数组来看值是不是大于0但是这样会出错，原因可能是loc数组在定义时就会0值所以无法判断出墙，导致WA
+                if(input[nx][ny]!='#'&&nx<h&&ny<w){
+                    //将图中的点的邻近点用数组存储，然后deg[i]表示已经存好的周围可以走的点
+                    G[i][deg[i]]=loc[nx][ny];
+                    deg[i]++;
+                }
+            }
+        }
+
+
+        //这个地方是建立虚拟节点，这样bfs时存储时就不用每种情况都要写不同的代码，因为这个虚拟节点在图中根本不存在，周边节点也只有一个就是自己，start和end数组都这样存好
+        //了自己存储时不会造成影响
+        if(n<=2){G[dnt][0]=dnt; starting[2]=ending[2]=dnt; deg[dnt++]=1;}
+        if(n<=1){G[dnt][0]=dnt; starting[1]=ending[1]=dnt; deg[dnt++]=1;}
+        //printf("开始的三位分别是%d %d %d  结束的三位是 %d %d %d\n",starting[0],starting[1],starting[2],ending[0],ending[1],ending[2]);
+        memset(dist,-1,sizeof(dist));
+        printf("%d\n",bfs());
+    }
+}
