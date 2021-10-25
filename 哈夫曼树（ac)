@@ -37,7 +37,7 @@ void BuildTree(int scale[],int n,Tree* hmt){
     for(int i=0;i<n-1;i++){
         //Tree *now=new Tree;
         int x1,x2,m1,m2;
-        m1=m2=10000;
+        m1=m2=0x3f3f3f3f;
         x1=x2=0;
         for(int j=0;j<n+i;j++){
             if(hmt[j].weight<m2&&hmt[j].flag==0){
