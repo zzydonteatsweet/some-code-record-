@@ -1,0 +1,136 @@
+#include<iostream>
+#include<cstdlib>
+using namespace std;
+typedef struct Haffmantree{
+    int parent;
+    int leftchild,rightchild;
+    int flag;
+    int weight;
+    Haffmantree(int p=0,int l=0,int r=0,int f=0,int w=0):parent(p),leftchild(l),rightchild(r),flag(f),weight(w){
+   
+    };
+    void list(){
+        cout << "这个节点的权重是" << weight << '\n';
+        cout << "左节点是" << leftchild << "右节点是" << rightchild << '\n';
+        cout << "父节点是" << parent << '\n';
+    }
+}Tree;
+
+typedef struct Haffmancode{
+    int code[1005];
+    int start;
+    int weight;
+}Code;
+
+void BuildTree(int scale[],int n,Tree* hmt){
+    //初始化节点
+    for(int i=0;i<2*n-1;i++){
+        if(i<n){//n个叶子节点
+            hmt[i]=Haffmantree(0,0,0,0,scale[i]);
+        }else{
+            hmt[i]=Haffmantree(0,0,0,0,0);
+        }
+        
+    }
+
+    //循环搜索节点然后选出两个
+    for(int i=0;i<n-1;i++){
+        //Tree *now=new Tree;
+        int x1,x2,m1,m2;
+        m1=m2=10000;
+        x1=x2=0;
+        for(int j=0;j<n+i;j++){
+            if(hmt[j].weight<m2&&hmt[j].flag==0){
+                x1=x2;
+                m1=m2;
+                m2=hmt[j].weight;
+                x2=j;
+            }else if(hmt[j].weight<m1&&hmt[j].flag==0){
+                x1=j;
+                m1=hmt[j].weight;
+            }     
+        }
+        //开始父节点的建立
+        hmt[x1].parent=n+i;
+        hmt[x2].parent=n+i;
+        hmt[n+i].leftchild=x1;
+        hmt[n+i].rightchild=x2;
+        hmt[n+i].weight=m1+m2;
+        hmt[x1].flag=1;//0是左1是右
+        hmt[x2].flag=1;
+    }
+}
+
+void Getcode(Tree *hmt,Code *Hcode,int n){
+    for(int i=0;i<n;i++){
+        //开始从每一个建好树的叶子开始向上搜索到根节点
+        //Code *now=new Code;
+
+        Hcode[i].start=0;
+        int now=i;
+        int parent=hmt[i].parent;
+        while(parent!=0){
+            //需要定义的有flag表示是左子节点还是右子节点，code数组存储向上编出的码，不断叠加
+            /*if(hmt[parent].leftchild==now){
+                hmt[now].flag=0;
+            }else {
+                hmt[now].flag=1;
+            }
+            Hcode[i].code[Hcode[i].start++]=hmt[now].flag;
+            */
+            Hcode[i].start++;
+            now=parent;
+            parent=hmt[now].parent;
+        }
+        //将编好的码进行倒置
+        /*printf("第%d个节点的编码是\n",i);
+        for(int k=0;k<Hcode[i].start;k++) {
+            printf("%d",Hcode[i].code[k]);
+        }
+        putchar('\n');*/
+        /*
+        for(int k=Hcode[i].start-1;k>=0;k--){
+            int temp=Hcode[i].code[k];
+            Hcode[i].code[k]=Hcode[i].code[Hcode[i].start-k-1];
+            Hcode[i].code[Hcode[i].start-k-1]=temp;
+        }
+        */
+    }
+}
+int main(){
+    int weight[10005];
+    int n;
+    //读取重量
+    cin >> n;
+    for(int i=0;i<n;i++){
+        cin >> weight[i];
+    }
+    //Tree *MyhaffmanTree=(Tree*)malloc(sizeof(Haffmantree)*5);
+    Tree *MyhaffmanTree=new Tree[2*n-1];
+    Code *MyhaffmanCode=new Code[n];
+    //建树
+    BuildTree(weight,n,MyhaffmanTree);
+    /*for(int i=0;i<2*n-1;i++){
+         cout << "这是第" << i << "个节点\n";
+        MyhaffmanTree[i].list();
+        putchar('\n');
+    }
+    system("pause");
+    */
+    //给每一个叶子节点进行编码
+    Getcode(MyhaffmanTree,MyhaffmanCode,n);
+    /*for(int i=0;i<2*n-1;i++){
+         cout << "这是第" << i << "个节点\n";
+        MyhaffmanTree[i].list();
+        putchar('\n');
+    }
+    system("pause");
+    */
+    //统计哈夫曼树的带权长度之和
+    long sum=0;
+    for(int i=0;i<n;i++){
+        sum+=MyhaffmanCode[i].start*weight[i];
+    }
+    printf("%ld\n",sum);
+    
+}   
