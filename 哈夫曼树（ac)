@@ -1,3 +1,6 @@
+/*
+    哈夫曼树是一种编码的最优二叉树，如何做出这种二叉树的方法就是将权重最大的节点放在离根节点最近的地方，权重最小的节点放在离根节点最远的地方
+*/
 #include<iostream>
 #include<cstdlib>
 using namespace std;
