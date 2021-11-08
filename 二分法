@@ -1,0 +1,42 @@
+//如果mid小于x那么l=mid+1，如果不是那么r=mid
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int N=100005;
+int in[N];
+int n;
+long sum=0;
+bool check(long mid){
+    for(int i=0;i<n;i++){
+        mid+=mid-in[i];
+        if(mid<0) return true;
+        if(mid > sum )return false;
+        //cout << "这次的mid是 " << mid << '\n';
+    }
+    return false;
+}
+int main(){
+    
+    
+    int xiao=0x3f3f3f3f;
+    scanf("%d",&n);
+    
+    for(int i=0;i<n;i++){
+        scanf("%d",&in[i]);
+        sum+=in[i];
+        xiao=min(xiao,in[i]);
+    }
+    //左闭右闭区间
+    int l=xiao,r=sum;;
+    int mid;
+    while(l<r){
+        mid=l+r >> 1;
+        if(check((long)mid)){
+            l=mid+1;
+        }else{
+            r=mid;
+        }
+    }
+    printf("%d\n",l);
+}
