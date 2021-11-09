@@ -1,0 +1,54 @@
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+#include<utility>
+using namespace std;
+const int N=2500005;
+//int stored[N];
+int a,b,c,d,n;
+
+typedef struct Sum{
+    int i,c,d;
+    bool operator < (const Sum& t) const {
+        if(i!=t.i) return i<t.i;
+        if(c!=t.c) return c<t.c;
+        return d<t.d;
+    }
+    Sum(int sum=0,int a=0,int b=0):i(sum),c(a),d(b){};
+};
+Sum stored[N];
+int main(){
+    //先是用结构体存储，每个总值对应的c,d然后开始枚举前两个
+    cin >> n;
+    int m=0;
+    for(int i=0;i*i<=n;i++){
+        for(int j=i;j*j+i*i<=n;j++){
+            stored[m++]=Sum(i*i+j*j,i,j);
+            //printf("第%d个值的总是%d,c是%d,d是%d\n",m,stored[m-1].i,stored[m-1].c,stored[m-1].d);
+        }
+    }
+    sort(stored,stored+m);
+    //经过排序找到的第一个就是要求的排序
+    for(a=0;a*a<=n;a++){
+        for(b=a;a*a+b*b<=n;b++){
+            int t=n-(a*a+b*b);
+            
+            int l=0;
+            int r=m-1;
+            while(l<r){
+                int mid=l+r >> 1;
+                if(stored[mid].i<t){
+                    l=mid+1;
+                }else{
+                    r=mid;
+                }
+            }
+            if(stored[l].i==t){
+                printf("%d %d %d %d ",a,b,stored[l].c,stored[l].d);
+                return 0;
+            }
+        }
+    }
+    
+}
